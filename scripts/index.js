@@ -21,7 +21,6 @@ function createCard(cardData, onDelete) {
     
 function deleteCard(card) {
 
-   //const cardItem = event.target.closest('.places__item');
    card.remove();
 
 }
