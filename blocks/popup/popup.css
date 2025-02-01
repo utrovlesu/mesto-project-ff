@@ -7,19 +7,6 @@
 @import url('./__button/popup__button.css');
 @import url('./__caption/popup__caption.css');
 @import url('./__image/popup__image.css');
-/*
-.popup {
-  font-family: 'Inter', Arial, sans-serif;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, .5);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 10;
-  transform: translate(-50%, -50%);
-}*/
 
 .popup {
   font-family: 'Inter', Arial, sans-serif;
