@@ -1,7 +1,28 @@
 import "../pages/index.css";
-import { createCard, deleteCard, handleClickLike } from "./components/card.js";
+import { createCard, handleClickLike } from "./components/card.js";
 import { openPopup, closePopup } from "./components/modal.js";
 import { enableValidation, clearValidation, checkInputValidity } from "./validation.js";
+import {
+  getUserInfo,
+  getInitialCards,
+  updateUserInfo,
+  addNewCard,
+  deleteCard,
+  likeCard,
+  unlikeCard,
+  updateUserAvatar
+} from './api.js';
+
+const api = {
+  getUserInfo,
+  getInitialCards,
+  updateUserInfo,
+  addNewCard,
+  deleteCard,
+  likeCard,
+  unlikeCard,
+  updateUserAvatar
+};
 
 let initialCards = [];
 let userId;
@@ -24,7 +45,6 @@ const newCardButton = document.querySelector(".profile__add-button");
 const newCardPopup = document.querySelector(".popup_type_new-card");
 
 // Кнопка удаления
-const trashButton = document.querySelector('.card__delete-button');
 const trashPopup = document.querySelector('.popup_type_delete-card');
 
 // Оверлей и обработка кнопки
@@ -184,7 +204,7 @@ enableValidation({
 // API
 const token = 'b2612306-5efa-42fe-befe-e170f4680808';
 const avatarURL = document.querySelector('.profile__image');
-
+/*
 const api = {
   getUserInfo() {
     return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/users/me`, {
@@ -253,9 +273,9 @@ const api = {
     });
   },
 
-  sendLikeToServer(cardID) {
+  sendLikeToServer(cardID, method) {
     return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/cards/likes/${cardID}`, {
-      method: 'PUT',
+      method: method,
       headers: {
         authorization: token
       }
@@ -265,7 +285,7 @@ const api = {
       return Promise.reject(`Ошибка: ${res.status}`);
     });
   }
-};
+};*/
 
 // Инициализация приложения
 Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -351,3 +371,4 @@ function handleFormConfirmDeleteSubmit(evt) {
 
 const formConfirmDelete = document.forms["confirm-delete-card"];
 formConfirmDelete.addEventListener("submit", handleFormConfirmDeleteSubmit);
+

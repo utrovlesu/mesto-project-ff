@@ -7,6 +7,23 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  position: relative;
+}
+
+.profile__image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.5s ease; 
+}
+
+.profile__image:hover::before{
+  background-color: rgba(0, 0, 0, 0.71);
+  background-image: url();
 }
 
 @media screen and (max-width: 740px) {
