@@ -1,23 +1,24 @@
+import { openDeletePopup } from '../index.js';
 import {
   getUserInfo,
   getInitialCards,
-  updateUserInfo,
+  sendUserData,
   addNewCard,
-  deleteCard,
+  deleteUserCard,
   likeCard,
   unlikeCard,
-  updateUserAvatar
+  sendUserAvatar
 } from '../api.js';
 
 const api = {
   getUserInfo,
   getInitialCards,
-  updateUserInfo,
+  sendUserData,
   addNewCard,
-  deleteCard,
+  deleteUserCard,
   likeCard,
   unlikeCard,
-  updateUserAvatar
+  sendUserAvatar
 };
 
 //создать карточки
@@ -32,7 +33,7 @@ export function createCard(cardData, handleClickLike, onImage, cardTemplate, use
   image.alt = cardData.name;
   cardItem.querySelector(".card__title").textContent = cardData.name;
   cardItem.querySelector(".card__like-count").textContent = cardData.likes.length;
-  
+  const trashPopup = document.querySelector('.popup_type_delete-card');
   
   //удаление карточки
   if(cardData.owner._id !== userId) {
@@ -41,9 +42,8 @@ export function createCard(cardData, handleClickLike, onImage, cardTemplate, use
     }
   else {
   trashButton.addEventListener("click", () => {
-    openPopup(trashPopup);
-    trashPopup.dataset.cardId = cardData._id;
-    
+    openDeletePopup(cardItem, cardData._id);
+      
     }
     );
   }
@@ -89,14 +89,16 @@ export function handleClickLike(cardData, likeButton) {
 }
 
 //удалить карточку
-/*
 export function deleteCard(card) {
   if (card && card.remove) {
     card.remove(); 
   } else {
     console.error("Ошибка: card не является DOM-элементом");
   }
-}*/
+}
+
+
+
 
 function updateLikeCount(likeButton, likeCount) {
   const likeCountElement = likeButton.closest('.card').querySelector('.card__like-count');

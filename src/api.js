@@ -30,7 +30,7 @@ const config = {
   };
   
   // Обновить информацию о пользователе
-  export const updateUserInfo = (data) => {
+  export const sendUserData  = (data) => {
     return fetch(`${config.baseUrl}/users/me`, {
       method: 'PATCH',
       headers: config.headers,
@@ -50,7 +50,7 @@ const config = {
   };
   
   // Удалить карточку
-  export const deleteCard = (cardID) => {
+  export const deleteUserCard = (cardID) => {
     return fetch(`${config.baseUrl}/cards/${cardID}`, {
       method: 'DELETE',
       headers: config.headers
@@ -77,7 +77,7 @@ const config = {
   };
   
   // Обновить аватар пользователя
-  export const updateUserAvatar = (avatarURL) => {
+  export const sendUserAvatar = (avatarURL) => {
     return fetch(`${config.baseUrl}/users/me/avatar`, {
       method: 'PATCH',
       headers: config.headers,

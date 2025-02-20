@@ -10,20 +10,29 @@
   position: relative;
 }
 
-.profile__image::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
+.profile__avatar-edit-button {
   width: 120px;
   height: 120px;
-  background-color: rgba(0, 0, 0, 0);
-  transition: background-color 0.5s ease; 
+  background: rgba(0, 0, 0, 0.71) url("../../../images/pen.svg") center no-repeat;  
+  border: initial;
+  cursor: pointer;
+  transition: opacity 0.5s ease; 
+  opacity: 0;
 }
 
-.profile__image:hover::before{
-  background-color: rgba(0, 0, 0, 0.71);
-  background-image: url();
+
+.profile__image__pen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.5s ease; 
+}
+
+.profile__image:hover .profile__avatar-edit-button {
+  opacity: 1;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 740px) {

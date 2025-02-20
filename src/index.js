@@ -1,27 +1,27 @@
 import "../pages/index.css";
-import { createCard, handleClickLike } from "./components/card.js";
+import { createCard, handleClickLike,deleteCard } from "./components/card.js";
 import { openPopup, closePopup } from "./components/modal.js";
 import { enableValidation, clearValidation, checkInputValidity } from "./validation.js";
 import {
   getUserInfo,
   getInitialCards,
-  updateUserInfo,
+  sendUserData ,
   addNewCard,
-  deleteCard,
+  deleteUserCard,
   likeCard,
   unlikeCard,
-  updateUserAvatar
+  sendUserAvatar
 } from './api.js';
 
 const api = {
   getUserInfo,
   getInitialCards,
-  updateUserInfo,
+  sendUserData ,
   addNewCard,
-  deleteCard,
+  deleteUserCard,
   likeCard,
   unlikeCard,
-  updateUserAvatar
+  sendUserAvatar
 };
 
 let initialCards = [];
@@ -93,13 +93,19 @@ function handleFormEditProfileSubmit(evt) {
     about: jobInput.value
   };
 
+  const submitButton = formEditProfile.querySelector('.popup__button');
+  submitButton.textContent = 'Сохранение...';
+
   api.sendUserData(userData)
   .then((resData) => {
     updateProfile(resData); 
   })
   .catch((error) => {
     console.error('Ошибка отправки данных профиля:', error);
-  });
+  })
+  .finally(() => {
+    submitButton.textContent = 'Сохранить';
+  })
 }
 
 // Обновить профиль
@@ -122,8 +128,6 @@ newCardButton.addEventListener("click", () => openPopup(newCardPopup));
 
 // Обновить карточки
 function updateCards(data, userId) {
-  console.log('userId в updateCards:', userId);
-  console.log('cardData.owner._id:', data.owner._id);
 
   const newCardObject = {
     likes: data.likes,
@@ -204,88 +208,6 @@ enableValidation({
 // API
 const token = 'b2612306-5efa-42fe-befe-e170f4680808';
 const avatarURL = document.querySelector('.profile__image');
-/*
-const api = {
-  getUserInfo() {
-    return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/users/me`, {
-      headers: {
-        authorization: token
-      }
-    })
-    .then(res => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
-  },
-
-  getInitialCards() {
-    return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/cards`, {
-      headers: {
-        authorization: token
-      }
-    })
-    .then(res => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
-  },
-
-  sendUserData(data) {
-    return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/users/me`, {
-      method: 'PATCH',
-      headers: {
-        authorization: token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(res => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
-  },
-
-  sendNewCard(data) {
-    return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/cards`, {
-      method: 'POST',
-      headers: {
-        authorization: token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(res => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
-  },
-
-  deleteCardFromServer(cardID) {
-    return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/cards/${cardID}`, {
-      method: 'DELETE',
-      headers: {
-        authorization: token
-      }
-    })
-    .then(res => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
-  },
-
-  sendLikeToServer(cardID, method) {
-    return fetch(`https://nomoreparties.co/v1/pwff-cohort-1/cards/likes/${cardID}`, {
-      method: method,
-      headers: {
-        authorization: token
-      }
-    })
-    .then(res => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
-  }
-};*/
 
 // Инициализация приложения
 Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -333,42 +255,111 @@ function handleFormNewCardSubmit(evt) {
     name: nameCardInput.value,
     link: urlInput.value,
   };
-  api.sendNewCard(newCardObject)
+
+  const submitButton = formNewCard.querySelector('.popup__button');
+  submitButton.textContent = 'Сохранение...';
+
+  api.addNewCard(newCardObject)
     .then((resData) => {
-      console.log('Карточка создана:', resData);
-      console.log('userId в sendNewCard:', userId);
       updateCards(resData, userId);
     })
     .catch((error) => {
       console.error('Ошибка отправки данных карточки:', error);
-    });
+    })
+    .finally(() => {
+      submitButton.textContent = 'Сохранить';
+    })
 }
 
 // Обработчик отправки формы карточки
 formNewCard.addEventListener("submit", handleFormNewCardSubmit);
 
 // Удалить карточку с сервера
+let cardDelete = null; 
+let cardIdDelete = null;
+
+export function openDeletePopup(cardElement, cardId) {
+  cardDelete = cardElement;
+  cardIdDelete = cardId; 
+  openPopup(trashPopup); 
+}
+
+const formConfirmDelete = document.forms["confirm-delete-card"];
+
 function deleteCardFromServer(cardData, cardElement) {
   const cardID = cardData._id;
-  api.deleteCardFromServer(cardID)
+    
+  api.deleteUserCard(cardID)
     .then(() => deleteCard(cardElement))
     .catch((error) => {
       console.error('Ошибка удаления карточки:', error);
-    });
+      if (error.response) {
+        error.response.json().then((data) => {
+          console.error('Детали ошибки:', data);
+        });
+      }
+    })
+    
 }
 
 function handleFormConfirmDeleteSubmit(evt) {
   evt.preventDefault();
-
-  const cardData = {
-    _id: trashPopup.dataset.cardId
-  };
-  const cardElement = document.querySelector('.places__item');
-
-  deleteCardFromServer(cardData, cardElement);
-  closePopup(trashPopup);
+  if (!cardDelete || !cardIdDelete) {
+    console.error('Карточка или её ID не определены');
+    return;
+  }
+  api.deleteUserCard(cardIdDelete)
+    .then(() => {
+      deleteCard(cardDelete); 
+      closePopup(trashPopup); 
+    })
+    .catch((error) => {
+      console.error('Ошибка удаления карточки:', error);
+    }) 
 }
 
-const formConfirmDelete = document.forms["confirm-delete-card"];
+//обработчик подтверждения удаления
+
 formConfirmDelete.addEventListener("submit", handleFormConfirmDeleteSubmit);
 
+//элементы для редактирования аватара
+const formEditAvatar = document.forms["new-avatar"];
+const inputUrlAvatar = formEditAvatar.querySelector('.popup__input_type_url');
+const popupNewAvatar = document.querySelector('.popup_type_new-avatar');
+const editAvatarButton = document.querySelector('.profile__avatar-edit-button');
+
+editAvatarButton.addEventListener("click", () => {
+  
+  openPopup(popupNewAvatar);
+});
+
+function updateUserAvatar(data) {
+  const avatarImg = document.querySelector('.profile__image');
+  avatarImg.style.backgroundImage = `url('${data.avatar}')`;
+
+}
+
+function handleFormEditAvatarSubmit(evt) {
+  evt.preventDefault();
+  const userData = {
+  avatar: inputUrlAvatar.value
+  } 
+  const url = userData.avatar;
+  const submitButton = formEditAvatar.querySelector('.popup__button');
+  submitButton.textContent = 'Сохранение...';
+  api.sendUserAvatar(url)
+    .then((resData) => {
+      updateUserAvatar(resData);
+      
+    })
+    .catch((error) => {
+      console.error('Ошибка загрузки аватара:', error);
+    })
+    .finally(() => {
+      submitButton.textContent = 'Сохранить';
+    })
+  closePopup(popupNewAvatar);
+  formEditAvatar.reset()
+} 
+
+formEditAvatar.addEventListener("submit", handleFormEditAvatarSubmit);
