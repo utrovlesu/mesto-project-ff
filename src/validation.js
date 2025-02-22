@@ -1,34 +1,37 @@
 //показать ошибку валидации
-function showInputError (formElement, inputElement, errorMessage, { inputErrorClass, errorClass }) {
-    const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-    inputElement.classList.add(inputErrorClass);
-    errorElement.textContent = errorMessage;
-    errorElement.classList.add(errorClass);
+function showInputError (formElement, inputElement, errorMes, validationConfig) {
+     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+    
+     inputElement.classList.add(validationConfig.inputErrorClass);
+     errorElement.textContent = errorMes;
+     errorElement.classList.add(validationConfig.errorClass);
+       
 }
 
-//скрыть ощибку валидации
-function hideInputError (formElement, inputElement, { inputErrorClass, errorClass }) {
+//скрыть ошибку валидации
+function hideInputError (formElement, inputElement, validationConfig) {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-    inputElement.classList.remove(inputErrorClass);
-    errorElement.classList.remove(errorClass);
+    inputElement.classList.remove(validationConfig.inputErrorClass);
+    errorElement.classList.remove(validationConfig.errorClass);
     errorElement.textContent = '';
 }
 
 //проверка валидации
-export function checkInputValidity (formElement, inputElement, validationConfig) {
-    const regex = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/;
-  
-    if (inputElement.name === 'name' || inputElement.name === 'description' || inputElement.name === 'place-name') {
-      if (!regex.test(inputElement.value)) {
-        showInputError(formElement, inputElement, 'Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы', validationConfig);
+function checkInputValidity (formElement, inputElement, validationConfig) {
+       
+    if (!inputElement.validity.valid) {
+     showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
+     const inputsText = document.querySelectorAll('input[type="text"]');
+  inputsText.forEach(input => {    
+      if (input.validity.patternMismatch) {
+        const errorMessage = input.getAttribute('data-error');
+        showInputError(formElement, input, errorMessage, validationConfig);
         return false;
       }
-    }
-  
-    if (!inputElement.validity.valid) {
-      showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
-      return false;
-    }
+         
+  })
+     return false;
+   }
   
     hideInputError(formElement, inputElement, validationConfig);
     return true;
@@ -56,22 +59,24 @@ export function enableValidation (validationConfig) {
   formList.forEach((formElement) => {
     formElement.addEventListener('submit', (evt) => {
       evt.preventDefault();
+     
     });
-
     setEventListeners(formElement, validationConfig);
+    
   });
 }
 
 //проверка на валидность всех полей
 function hasInvalidInput (inputList) {
-  return inputList.some((inputElement) => {
-    return !inputElement.validity.valid || inputElement.classList.contains('popup__input_type_error');
+  return inputList.some((element) => {
+    return !element.validity.valid ;
   });
 }
 
 //переключение доступности кнопки
-function toggleButtonState (inputList, buttonElement, inactiveButtonClass) {
+function toggleButtonState (inputList, buttonElement,  inactiveButtonClass) {
   if (hasInvalidInput(inputList)) {
+    console.log(inactiveButtonClass);
     buttonElement.classList.add(inactiveButtonClass); 
   } else {
     buttonElement.classList.remove(inactiveButtonClass);   
@@ -80,6 +85,8 @@ function toggleButtonState (inputList, buttonElement, inactiveButtonClass) {
 
 //очистить форму от ошибок валидации
 export function clearValidation (formElement, validationConfig) {
+  console.log("Очистка валидации для формы:", formElement);
+  
   const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
   const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 

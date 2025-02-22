@@ -1,24 +1,11 @@
-import { openDeletePopup } from "../index.js";
 import {
-  getUserInfo,
-  getInitialCards,
-  sendUserData,
-  addNewCard,
-  deleteUserCard,
   likeCard,
-  unlikeCard,
-  sendUserAvatar,
+  unlikeCard  
 } from "../api.js";
 
-const api = {
-  getUserInfo,
-  getInitialCards,
-  sendUserData,
-  addNewCard,
-  deleteUserCard,
+const api = {  
   likeCard,
-  unlikeCard,
-  sendUserAvatar,
+  unlikeCard  
 };
 
 //создать карточки
@@ -28,7 +15,8 @@ export function createCard(
   handleClickLike,
   onImage,
   cardTemplate,
-  userId
+  userId,
+  openDeletePopup
 ) {
   const cardItem = cardTemplate.querySelector(".places__item").cloneNode(true);
   const image = cardItem.querySelector(".card__image");
@@ -38,9 +26,7 @@ export function createCard(
   image.src = cardData.link;
   image.alt = cardData.name;
   cardItem.querySelector(".card__title").textContent = cardData.name;
-  cardItem.querySelector(".card__like-count").textContent =
-    cardData.likes.length;
-  const trashPopup = document.querySelector(".popup_type_delete-card");
+  cardItem.querySelector(".card__like-count").textContent = cardData.likes.length;
 
   //удаление карточки
   if (cardData.owner._id !== userId) {

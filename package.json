@@ -4,6 +4,7 @@
   "description": "[Ссылка на репозиторий](https://github.com/utrovlesu/mesto-project-ff.git)",
   "main": "index.js",
   "scripts": {
+    "start": "ts-node ./script.ts",
     "build": "webpack --mode production",
     "dev": "webpack serve",
     "predeploy": "npm run build",
@@ -26,6 +27,7 @@
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss-loader": "^8.1.1",
+    "typescript": "^5.7.3",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.0"
